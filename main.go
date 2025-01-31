@@ -18,6 +18,8 @@ func main() {
 		c = cmd.ListTaksCommand()
 	case "update":
 		c = cmd.UpdateTaskCommand()
+	case "delete":
+		c = cmd.DeleteTaskCommand()
 	default:
 		fmt.Print(fmt.Errorf("task-tracker %q is not a command", os.Args[1]))
 		os.Exit(0)
