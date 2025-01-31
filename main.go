@@ -14,6 +14,8 @@ func main() {
 	switch os.Args[1] {
 	case "add":
 		c = cmd.AddTaskCommand()
+	case "list":
+		c = cmd.ListTaksCommand()
 	default:
 		fmt.Print(fmt.Errorf("task-tracker %q is not a command", os.Args[1]))
 		os.Exit(0)
