@@ -20,6 +20,10 @@ func main() {
 		c = cmd.UpdateTaskCommand()
 	case "delete":
 		c = cmd.DeleteTaskCommand()
+	case "mark-done":
+		c = cmd.MarkDoneTaskCommand()
+	case "mark-in-progress":
+		c = cmd.MarkInProgressTaskCommand()
 	default:
 		fmt.Print(fmt.Errorf("task-tracker %q is not a command", os.Args[1]))
 		os.Exit(0)
