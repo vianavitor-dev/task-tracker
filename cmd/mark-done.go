@@ -22,6 +22,11 @@ func MarkDoneTaskCommand() *Command {
 
 var markDone = func(c *Command, args []string) {
 
-	function.Mark("markDone", args)
+	if err := function.Mark("markDone", args); err != nil {
+		fmt.Print(err)
+		os.Exit(0)
+	}
+
+	fmt.Printf("Task %q was marked successfully", args[0])
 	os.Exit(0)
 }

@@ -1,22 +1,16 @@
 package function
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"strconv"
+	"time"
+
+	"github.com/vianavitor-dev/task-tracker/models"
 )
 
-type Task struct {
-	ID          int    `json:"id"`
-	Description string `json:"description"`
-	Status      string `json:"status"`
-	CreatedAt   string `json:"createdAt"`
-	UpdatedAt   string `json:"updatedAt"`
-}
-
-func Mark(mark string, args []string) {
+func Mark(mark string, args []string) error {
 
 	if len(args) != 1 {
 		fmt.Printf("%s %v : only one argument is supported", mark, args)
@@ -28,19 +22,15 @@ func Mark(mark string, args []string) {
 		log.Fatalf("%s %v : %v", mark, args, err)
 	}
 
-	listFile, err := os.ReadFile("task-list.json")
-	if err != nil {
-		log.Fatalf("%s %v : %v", mark, args, err)
+	var file = models.Files{PathName: "task-list.json"}
+	taskList := []models.Task{}
+
+	if err := file.FileToTasks(&taskList); err != nil && len(taskList) > 0 {
+		return fmt.Errorf("%s %v : %v", mark, args, err)
 	}
 
-	taskList := []Task{}
-
-	if err := json.Unmarshal(listFile, &taskList); err != nil && len(listFile) > 0 {
-		log.Fatalf("%s %v : %v", mark, args, err)
-	}
 	if len(taskList) <= 0 {
-		fmt.Printf("%s %v : tasks list is empty, use it only if the list has tasks", mark, args)
-		os.Exit(0)
+		return fmt.Errorf("%s %v : tasks list is empty, use it only if the list has tasks", mark, args)
 	}
 
 	var found = false
@@ -54,25 +44,18 @@ func Mark(mark string, args []string) {
 				taskList[i].Status = "in progress"
 			}
 
+			taskList[i].UpdatedAt = time.Now().UTC().Format("2006-01-02")
 			found = true
 		}
 	}
 
 	if !found {
-		fmt.Printf("%s %v : task not found", mark, args)
-		os.Exit(0)
+		return fmt.Errorf("%s %v : task not found", mark, args)
 	}
 
-	jsonNewTasks, err := json.MarshalIndent(taskList, "", " ")
-	if err != nil {
-		fmt.Print(fmt.Errorf("%s %v : %v", mark, args, err))
-		os.Exit(0)
+	if err := file.TruncadeTask(taskList); err != nil {
+		return fmt.Errorf("%s %v : %v", mark, args, err)
 	}
 
-	if err := os.WriteFile("task-list.json", jsonNewTasks, 0644); err != nil {
-		log.Fatalf("%s %q : %v", mark, args, err)
-	}
-
-	fmt.Printf("Task %d was marked successfully", id)
-	os.Exit(0)
+	return nil
 }

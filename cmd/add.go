@@ -1,21 +1,21 @@
 package cmd
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"time"
+
+	"github.com/vianavitor-dev/task-tracker/models"
 )
 
-type Task struct {
-	ID          int    `json:"id"`
-	Description string `json:"description"`
-	Status      string `json:"status"`
-	CreatedAt   string `json:"createdAt"`
-	UpdatedAt   string `json:"updatedAt"`
-}
+// type Task struct {
+// 	ID          int    `json:"id"`
+// 	Description string `json:"description"`
+// 	Status      string `json:"status"`
+// 	CreatedAt   string `json:"createdAt"`
+// 	UpdatedAt   string `json:"updatedAt"`
+// }
 
 func AddTaskCommand() *Command {
 	cmd := &Command{
@@ -33,36 +33,20 @@ func AddTaskCommand() *Command {
 var addTask = func(c *Command, args []string) {
 	desc := args[0]
 
-	listFile, err := os.ReadFile("task-list.json")
-	if err != nil {
-		log.Fatalf("addTask %q : %v", desc, err)
-	}
-
-	taskList := []Task{}
-
-	if err := json.Unmarshal(listFile, &taskList); err != nil && len(listFile) > 0 {
-		log.Fatalf("addTask %q : %v", desc, err)
-	}
-
-	current := Task{
-		ID:          len(taskList) + 1,
+	current := models.Task{
 		Description: desc,
 		Status:      "todo",
 		CreatedAt:   time.Now().UTC().Format("2006-01-02"),
 		UpdatedAt:   time.Now().UTC().Format("2006-01-02"),
 	}
 
-	taskList = append(taskList, current)
-	jsonCurr, err := json.MarshalIndent(taskList, "", " ")
+	var file = models.Files{PathName: "task-list.json"}
+	currentId, err := file.AppendFile(current)
 
 	if err != nil {
 		fmt.Print(fmt.Errorf("addTask %q : %v", desc, err))
-		os.Exit(0)
 	}
 
-	if err := os.WriteFile("task-list.json", jsonCurr, 0644); err != nil {
-		log.Fatalf("addTask %q : %v", desc, err)
-	}
-
-	fmt.Printf("Task added successfully (ID: %d)", current.ID)
+	fmt.Printf("Task added successfully (ID: %d)", currentId)
+	os.Exit(0)
 }

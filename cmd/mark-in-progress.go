@@ -15,13 +15,18 @@ func MarkInProgressTaskCommand() *Command {
 	}
 
 	cmd.flags.Usage = func() {
-		fmt.Print(`Usage: ... mark-done <id>`)
+		fmt.Print(`Usage: ... mark-in-progress <id>`)
 	}
 	return cmd
 }
 
 var markInProgress = func(c *Command, args []string) {
 
-	function.Mark("markInProgress", args)
+	if err := function.Mark("markInProgress", args); err != nil {
+		fmt.Print(err)
+		os.Exit(0)
+	}
+
+	fmt.Printf("Task %q was marked successfully", args[0])
 	os.Exit(0)
 }

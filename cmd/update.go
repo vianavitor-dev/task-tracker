@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/vianavitor-dev/task-tracker/models"
 )
 
 func UpdateTaskCommand() *Command {
@@ -43,7 +45,7 @@ var updateTask = func(c *Command, args []string) {
 		log.Fatalf("updateTask %v : %v", args, err)
 	}
 
-	taskList := []Task{}
+	taskList := []models.Task{}
 
 	if err := json.Unmarshal(listFile, &taskList); err != nil && len(listFile) > 0 {
 		log.Fatalf("updateTask %v : %v", args, err)

@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
+
+	"github.com/vianavitor-dev/task-tracker/models"
 )
 
 func ListTaksCommand() *Command {
@@ -24,25 +27,28 @@ func ListTaksCommand() *Command {
 
 var listTasks = func(c *Command, args []string) {
 
-	listFile, err := os.ReadFile("task-list.json")
-	if err != nil {
-		log.Fatalf("addTask %v : %v", args, err)
-	}
+	var fs = models.Files{PathName: "task-list.json"}
 
 	if len(args) <= 0 {
-		fmt.Printf("%s", listFile)
-	} else {
-
-		status := args[0]
-		taskList := []Task{}
-
-		if err := json.Unmarshal(listFile, &taskList); err != nil && len(listFile) > 0 {
-			log.Fatalf("addTask %q : %v", status, err)
+		files, err := fs.ReadFile()
+		if err != nil {
+			log.Fatalf("addTask %v : %v", args, err)
 		}
 
-		result := []Task{}
+		fmt.Printf("%s", files)
 
-		for _, t := range taskList {
+	} else {
+
+		status := strings.ReplaceAll(args[0], "-", " ")
+		var tasks = []models.Task{}
+
+		if err := fs.FileToTasks(&tasks); err != nil {
+			log.Fatalf("addTask %v : %v", args, err)
+		}
+
+		result := []models.Task{}
+
+		for _, t := range tasks {
 			if t.Status == status {
 				result = append(result, t)
 			}
