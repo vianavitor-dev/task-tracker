@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -40,14 +39,10 @@ var updateTask = func(c *Command, args []string) {
 
 	newDesc := strings.ReplaceAll(args[1], "-", " ")
 
-	listFile, err := os.ReadFile("task-list.json")
-	if err != nil {
-		log.Fatalf("updateTask %v : %v", args, err)
-	}
-
 	taskList := []models.Task{}
+	var file = models.Files{PathName: "task-list.json"}
 
-	if err := json.Unmarshal(listFile, &taskList); err != nil && len(listFile) > 0 {
+	if err := file.FileToTasks(&taskList); err != nil && len(taskList) > 0 {
 		log.Fatalf("updateTask %v : %v", args, err)
 	}
 	if len(taskList) <= 0 {
@@ -73,14 +68,9 @@ var updateTask = func(c *Command, args []string) {
 		os.Exit(0)
 	}
 
-	jsonTaskList, err := json.MarshalIndent(taskList, "", " ")
-	if err != nil {
+	if err := file.TruncadeTask(taskList); err != nil {
 		fmt.Print(fmt.Errorf("updateTask %v : %v", args, err))
 		os.Exit(0)
-	}
-
-	if err := os.WriteFile("task-list.json", jsonTaskList, 0644); err != nil {
-		log.Fatalf("updateTask %v : %v", args, err)
 	}
 
 	fmt.Printf("Task %d, %q, successfully modified", id, newDesc)

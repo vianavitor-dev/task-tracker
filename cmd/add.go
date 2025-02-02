@@ -9,14 +9,6 @@ import (
 	"github.com/vianavitor-dev/task-tracker/models"
 )
 
-// type Task struct {
-// 	ID          int    `json:"id"`
-// 	Description string `json:"description"`
-// 	Status      string `json:"status"`
-// 	CreatedAt   string `json:"createdAt"`
-// 	UpdatedAt   string `json:"updatedAt"`
-// }
-
 func AddTaskCommand() *Command {
 	cmd := &Command{
 		flags:   flag.NewFlagSet("add", flag.ExitOnError),

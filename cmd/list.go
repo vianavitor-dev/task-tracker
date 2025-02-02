@@ -32,7 +32,7 @@ var listTasks = func(c *Command, args []string) {
 	if len(args) <= 0 {
 		files, err := fs.ReadFile()
 		if err != nil {
-			log.Fatalf("addTask %v : %v", args, err)
+			log.Fatalf("listTasks %v : %v", args, err)
 		}
 
 		fmt.Printf("%s", files)
@@ -43,7 +43,7 @@ var listTasks = func(c *Command, args []string) {
 		var tasks = []models.Task{}
 
 		if err := fs.FileToTasks(&tasks); err != nil {
-			log.Fatalf("addTask %v : %v", args, err)
+			log.Fatalf("listTasks %v : %v", args, err)
 		}
 
 		result := []models.Task{}
@@ -56,7 +56,7 @@ var listTasks = func(c *Command, args []string) {
 
 		jsonResult, err := json.MarshalIndent(result, "", " ")
 		if err != nil {
-			fmt.Print(fmt.Errorf("addTask %q : %v", status, err))
+			fmt.Print(fmt.Errorf("listTasks %q : %v", status, err))
 			os.Exit(0)
 		}
 
